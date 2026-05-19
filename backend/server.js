@@ -24,14 +24,22 @@ connectDB();
 // CORS — allow frontend origin
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://complaint-management-frontend.onrender.com",
-    ],
+    origin: function (origin, callback) {
+      const allowed = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+      ];
+      // Allow any onrender.com subdomain for production
+      if (!origin || allowed.includes(origin) || /\.onrender\.com$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
 
 // Parse incoming JSON bodies
 app.use(express.json());
